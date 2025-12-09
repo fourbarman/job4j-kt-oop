@@ -14,42 +14,37 @@ class TrackerTest {
 
     @Test
     fun whenAddNewItemThenReturnItemWithIndexOne() {
-        val item = Item()
-        item.setName("New item")
-
+        val item = Item(0, "New item")
         val addedItem = tracker.add(item)
 
-        assertThat(addedItem.getId()).isNotNull()
-        assertThat(addedItem.getName()).isEqualTo("New item")
+        assertThat(addedItem.id).isNotNull()
+        assertThat(addedItem.name).isEqualTo("New item")
     }
 
     @Test
     fun whenAddTwoNewItemsThenReturnEach() {
-        val item1 = Item()
-        item1.setName("New item 1")
-        val item2 = Item()
-        item2.setName("New item 2")
+        val item1 = Item(0, "New item 1")
+        val item2 = Item(0, "New item 2")
 
         val added1 = tracker.add(item1)
         val added2 = tracker.add(item2)
 
-        assertThat(added1.getId()).isNotNull()
-        assertThat(added2.getId()).isNotNull()
-        assertThat(added1.getName()).isEqualTo("New item 1")
-        assertThat(added2.getName()).isEqualTo("New item 2")
+        assertThat(added1.id).isNotNull()
+        assertThat(added2.id).isNotNull()
+        assertThat(added1.name).isEqualTo("New item 1")
+        assertThat(added2.name).isEqualTo("New item 2")
     }
 
     @Test
     fun whenFindByIdAndTrackerHasItemThenReturnFoundItem() {
-        val item = Item()
-        item.setName("New item")
+        val item = Item(0, "New item")
         val addedItem = tracker.add(item)
 
-        val foundItem = tracker.findById(addedItem.getId())
+        val foundItem = tracker.findById(addedItem.id)
 
         assertThat(foundItem).isNotNull
-        assertThat(foundItem?.getId()).isEqualTo(addedItem.getId())
-        assertThat(addedItem.getName()).isEqualTo("New item")
+        assertThat(foundItem?.id).isEqualTo(addedItem.id)
+        assertThat(addedItem.name).isEqualTo("New item")
     }
 
     @Test
@@ -59,14 +54,13 @@ class TrackerTest {
 
     @Test
     fun whenDeleteByIdItemAndTrackerHaveItemThenReturnDeletedAndItsNotInStorage() {
-        val item = Item()
-        item.setName("New item")
+        val item = Item(0, "New item")
         val added = tracker.add(item)
 
-        val deleted = tracker.deleteById(added.getId())
+        val deleted = tracker.deleteById(added.id)
 
-        assertThat(deleted?.getId()).isEqualTo(added.getId())
-        assertThat(tracker.findById(added.getId())).isNull()
+        assertThat(deleted?.id).isEqualTo(added.id)
+        assertThat(tracker.findById(added.id)).isNull()
     }
 
     @Test
@@ -76,11 +70,9 @@ class TrackerTest {
 
     @Test
     fun whenFindAllThenReturnListOfItems() {
-        val item1 = Item()
-        item1.setName("New item 2")
+        val item1 = Item(0, "New item 1")
+        val item2 = Item(0, "New item 2")
         val added1 = tracker.add(item1)
-        val item2 = Item()
-        item2.setName("New item 2")
         val added2 = tracker.add(item2)
 
         val items = tracker.findAll()
@@ -96,24 +88,21 @@ class TrackerTest {
 
     @Test
     fun whenFindByNameAndTrackerHaveItemThenReturnListOfFoundItem() {
-        val item = Item()
-        item.setName("New item")
+        val item = Item(0, "New item")
         val added = tracker.add(item)
 
         val found = tracker.findByName("New item")
 
         assertThat(found.size).isEqualTo(1)
-        assertThat(found[0].getId()).isEqualTo(added.getId())
-        assertThat(found[0].getName()).isEqualTo(item.getName())
+        assertThat(found[0].id).isEqualTo(added.id)
+        assertThat(found[0].name).isEqualTo(item.name)
     }
 
     @Test
     fun whenFindByNameAndTrackerHaveTwoItemsThenReturnListOfFoundItems() {
-        val item1 = Item()
-        item1.setName("New item 1")
+        val item1 = Item(0, "New item 1")
+        val item2 = Item(0, "New item 2")
         val added1 = tracker.add(item1)
-        val item2 = Item()
-        item2.setName("New item 2")
         val added2 = tracker.add(item2)
 
         val foundList = tracker.findByName("New item")
@@ -129,17 +118,15 @@ class TrackerTest {
 
     @Test
     fun whenReplaceItemThenReturnReplaced() {
-        val item = Item()
-        item.setName("New item")
+        val item = Item(0, "New item")
         val added = tracker.add(item)
 
-        val new = Item()
-        item.setName("Replaced item")
+        val new = Item(0, "Replaced item")
 
-        val replaced = tracker.replace(added.getId(), new)
+        val replaced = tracker.replace(added.id, new)
 
-        assertThat(replaced?.getId()).isEqualTo(added.getId())
-        assertThat(replaced?.getName()).isEqualTo(new.getName())
+        assertThat(replaced?.id).isEqualTo(added.id)
+        assertThat(replaced?.name).isEqualTo(new.name)
     }
 
     @Test
