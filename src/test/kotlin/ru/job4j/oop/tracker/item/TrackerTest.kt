@@ -3,7 +3,10 @@ package ru.job4j.oop.tracker.item
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class TrackerTest {
     private lateinit var tracker: Tracker
 
@@ -14,74 +17,69 @@ class TrackerTest {
 
     @Test
     fun whenAddNewItemThenReturnItemWithIndexOne() {
-        val item = Item()
-        item.setName("New item")
+        tracker.add("New item")
+        val addedItem = tracker.findAll()[0]
 
-        val addedItem = tracker.add(item)
-
-        assertThat(addedItem.getId()).isNotNull()
-        assertThat(addedItem.getName()).isEqualTo("New item")
+        assertThat(addedItem).isNotNull()
+        assertThat(addedItem.name).isEqualTo("New item")
     }
 
     @Test
     fun whenAddTwoNewItemsThenReturnEach() {
-        val item1 = Item()
-        item1.setName("New item 1")
-        val item2 = Item()
-        item2.setName("New item 2")
+        tracker.add("New item 1")
+        tracker.add("New item 2")
 
-        val added1 = tracker.add(item1)
-        val added2 = tracker.add(item2)
+        val added1 = tracker.findAll()[0]
+        val added2 = tracker.findAll()[1]
 
-        assertThat(added1.getId()).isNotNull()
-        assertThat(added2.getId()).isNotNull()
-        assertThat(added1.getName()).isEqualTo("New item 1")
-        assertThat(added2.getName()).isEqualTo("New item 2")
+        assertThat(added1).isNotNull()
+        assertThat(added2).isNotNull()
+        assertThat(added1.name).isEqualTo("New item 1")
+        assertThat(added2.name).isEqualTo("New item 2")
     }
 
     @Test
     fun whenFindByIdAndTrackerHasItemThenReturnFoundItem() {
-        val item = Item()
-        item.setName("New item")
-        val addedItem = tracker.add(item)
+        val addedItem = tracker.add("New item")
 
-        val foundItem = tracker.findById(addedItem.getId())
+        val foundItem = tracker.findById(addedItem.uuid)
 
         assertThat(foundItem).isNotNull
-        assertThat(foundItem?.getId()).isEqualTo(addedItem.getId())
-        assertThat(addedItem.getName()).isEqualTo("New item")
+        assertThat(foundItem?.uuid).isEqualTo(addedItem.uuid)
+        assertThat(foundItem?.name).isEqualTo(addedItem.name)
     }
 
     @Test
     fun whenFindByIdAndTrackerDoesntHaveItemThenReturnNull() {
-        assertThat(tracker.findById(1)).isNull()
+        assertThat(tracker.findById(Uuid.random())).isNull()
     }
 
     @Test
-    fun whenDeleteByIdItemAndTrackerHaveItemThenReturnDeletedAndItsNotInStorage() {
-        val item = Item()
-        item.setName("New item")
-        val added = tracker.add(item)
+    fun whenDeleteByIdItemAndTrackerHaveItemItsNotInStorage() {
+        val added = tracker.add("New item")
 
-        val deleted = tracker.deleteById(added.getId())
+        tracker.deleteById(added.uuid)
 
-        assertThat(deleted?.getId()).isEqualTo(added.getId())
-        assertThat(tracker.findById(added.getId())).isNull()
+        assertThat(tracker.findById(added.uuid)).isNull()
     }
 
     @Test
     fun whenDeleteByIdItemAndTrackerDoesntHaveItemThenReturnNull() {
-        assertThat(tracker.deleteById(1)).isNull()
+        val added = tracker.add("New item")
+        val before = tracker.findAll()
+
+        tracker.deleteById(Uuid.random())
+
+        val after = tracker.findAll()
+
+        assertThat(after).containsExactlyElementsOf(before)
+        assertThat(after).contains(added)
     }
 
     @Test
     fun whenFindAllThenReturnListOfItems() {
-        val item1 = Item()
-        item1.setName("New item 2")
-        val added1 = tracker.add(item1)
-        val item2 = Item()
-        item2.setName("New item 2")
-        val added2 = tracker.add(item2)
+        val added1 = tracker.add("New item 1")
+        val added2 = tracker.add("New item 2")
 
         val items = tracker.findAll()
 
@@ -96,25 +94,19 @@ class TrackerTest {
 
     @Test
     fun whenFindByNameAndTrackerHaveItemThenReturnListOfFoundItem() {
-        val item = Item()
-        item.setName("New item")
-        val added = tracker.add(item)
+        val added = tracker.add("New item")
 
         val found = tracker.findByName("New item")
 
         assertThat(found.size).isEqualTo(1)
-        assertThat(found[0].getId()).isEqualTo(added.getId())
-        assertThat(found[0].getName()).isEqualTo(item.getName())
+        assertThat(found[0].uuid).isEqualTo(added.uuid)
+        assertThat(found[0].name).isEqualTo(added.name)
     }
 
     @Test
     fun whenFindByNameAndTrackerHaveTwoItemsThenReturnListOfFoundItems() {
-        val item1 = Item()
-        item1.setName("New item 1")
-        val added1 = tracker.add(item1)
-        val item2 = Item()
-        item2.setName("New item 2")
-        val added2 = tracker.add(item2)
+        val added1 = tracker.add("New item 1")
+        val added2 = tracker.add("New item 2")
 
         val foundList = tracker.findByName("New item")
 
@@ -129,22 +121,15 @@ class TrackerTest {
 
     @Test
     fun whenReplaceItemThenReturnReplaced() {
-        val item = Item()
-        item.setName("New item")
-        val added = tracker.add(item)
+        val added = tracker.add("New item")
+        val replaced = tracker.replace(added.uuid, "Replaced item")
 
-        val new = Item()
-        item.setName("Replaced item")
-
-        val replaced = tracker.replace(added.getId(), new)
-
-        assertThat(replaced?.getId()).isEqualTo(added.getId())
-        assertThat(replaced?.getName()).isEqualTo(new.getName())
+        assertThat(replaced?.uuid).isEqualTo(added.uuid)
+        assertThat(replaced?.name).isEqualTo(added.name)
     }
 
     @Test
     fun whenReplaceItemAndTrackerDoesntHaveItemThenReturnNull() {
-
-        assertThat(tracker.replace(1, Item())).isNull()
+        assertThat(tracker.replace(Uuid.random(), "Replaced item")).isNull()
     }
 }

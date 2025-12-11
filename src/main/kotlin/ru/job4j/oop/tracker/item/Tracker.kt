@@ -1,45 +1,36 @@
 package ru.job4j.oop.tracker.item
 
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+@OptIn(ExperimentalUuidApi::class)
 class Tracker {
     private val items = mutableListOf<Item>()
-    private var index = 1
 
-    fun add(item: Item): Item {
-        item.setId(index++)
+    fun add(name: String): Item {
+        val item = Item(name = name)
         items.add(item)
         return item
     }
 
-    fun replace(id: Int, item: Item): Item? {
-        val index = items.indexOfFirst { it.getId() == id }
-        if (index == -1) {
-            return null
-        }
-
-        val updated = items[index]
-        updated.setName(item.getName())
-
-        return updated
+    fun replace(id: Uuid, newName: String): Item? {
+        val existing = items.find { it.uuid == id } ?: return null
+        existing.name = newName
+        return existing
     }
 
-    fun deleteById(id: Int): Item? {
-        val index = items.indexOfFirst { it.getId() == id }
-        if (index == -1) {
-            return null
-        }
-
-        return items.removeAt(index)
+    fun deleteById(id: Uuid) {
+        val index = items.indexOfFirst { it.uuid == id }
+        if (index == -1) return
+        items.removeAt(index)
     }
 
-    fun findAll(): List<Item> {
-        return items.toList()
-    }
+    fun findAll(): List<Item> =
+        items.toList()
 
-    fun findById(id: Int): Item? {
-        return items.find {it.getId() == id}
-    }
+    fun findById(id: Uuid): Item? =
+        items.find {it.uuid == id}
 
-    fun findByName(name: String): List<Item> {
-        return items.filter {it.getName().contains(name)}
-    }
+    fun findByName(name: String): List<Item> =
+        items.filter {it.name.contains(name)}
 }

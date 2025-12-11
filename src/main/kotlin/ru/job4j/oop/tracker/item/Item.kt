@@ -1,18 +1,7 @@
 package ru.job4j.oop.tracker.item
 
-class Item {
-    private var id = 0
-    private var name = ""
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-    fun getId(): Int = id
-
-    fun setId(id: Int) {
-        this.id = id
-    }
-
-    fun getName(): String = name
-
-    fun setName(name: String) {
-        this.name = name
-    }
-}
+@OptIn(ExperimentalUuidApi::class)
+data class Item (var name: String, val uuid: Uuid = Uuid.random())
