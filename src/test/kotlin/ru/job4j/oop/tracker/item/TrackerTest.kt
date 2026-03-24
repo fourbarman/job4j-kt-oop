@@ -23,7 +23,7 @@ class TrackerTest {
 
         val addedItem = tracker.findAll()[0]
 
-        assertThat(addedItem).isNotNull()
+        //assertThat(addedItem).isNotNull()
         assertThat(addedItem).isEqualTo(item)
     }
 
@@ -36,13 +36,7 @@ class TrackerTest {
         tracker.add(item1)
         tracker.add(item2)
 
-        val added1 = tracker.findAll()[0]
-        val added2 = tracker.findAll()[1]
-
-        assertThat(added1).isNotNull()
-        assertThat(added2).isNotNull()
-        assertThat(added1).isEqualTo(item1)
-        assertThat(added2).isEqualTo(item2)
+        assertThat(tracker.findAll()).containsExactlyInAnyOrder(item1, item2)
     }
 
     @Test
@@ -53,13 +47,13 @@ class TrackerTest {
 
         val foundItem = tracker.findById(fixedUuid)
 
-        assertThat(foundItem).isNotNull
         assertThat(foundItem).isEqualTo(item)
     }
 
     @Test
     fun whenFindByIdAndTrackerDoesntHaveItemThenReturnNull() {
         val fixedUuid = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
         assertThat(tracker.findById(fixedUuid)).isNull()
     }
 
@@ -88,7 +82,6 @@ class TrackerTest {
         val after = tracker.findAll()
 
         assertThat(after).containsExactlyElementsOf(before)
-        assertThat(after).contains(item)
     }
 
     @Test
@@ -102,8 +95,7 @@ class TrackerTest {
 
         val items = tracker.findAll()
 
-        assertThat(items).hasSize(2)
-        assertThat(items).contains(item1, item2)
+        assertThat(items).containsExactlyInAnyOrder(item1, item2)
     }
 
     @Test
@@ -119,8 +111,7 @@ class TrackerTest {
 
         val found = tracker.findByName("New item")
 
-        assertThat(found.size).isEqualTo(1)
-        assertThat(found[0]).isEqualTo(item)
+        assertThat(found).containsExactlyInAnyOrder(item)
     }
 
     @Test
@@ -135,8 +126,7 @@ class TrackerTest {
 
         val foundList = tracker.findByName("New item")
 
-        assertThat(foundList.size).isEqualTo(2)
-        assertThat(foundList).containsOnly(item1, item2)
+        assertThat(foundList).containsExactlyInAnyOrder(item1, item2)
     }
 
     @Test
@@ -151,8 +141,7 @@ class TrackerTest {
 
         val foundList = tracker.findByName("New item 1")
 
-        assertThat(foundList.size).isEqualTo(1)
-        assertThat(foundList).containsOnly(item1)
+        assertThat(foundList).containsExactlyInAnyOrder(item1)
     }
 
     @Test
